@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <canvas id="myCanvas" width ="500" height="300" style="border:1px solid #000000;"></canvas>
+        <style>
+            canvas{
+                background-color:brown;
+            }
+            
+        </style>
+    </head>
+    <body>
+        <h1>Here is a simple scrolling game to start the game</h1>
+        <h2>click on the frame to begin</h2>
+        <script>
+            var c;
+            var ctx;
+            var score = 0;
+            //var level = 100;
+            
+            c = document.getElementById("myCanvas");
+            ctx = c.getContext("2d");
+            
+            var x = c.width/2;
+            var y = 50; //c.height - 230;
+            var radius = 10;
+            var dx = 2;
+            var dy = -2;
+            var rectHeight = 10;
+            var rectWidth = 75;
+            var rectPos = (c.width - rectWidth)/2;
+            
+            //moving variables
+            var goRight = false;
+            var goLeft = false;
+            
+            //event handlers for the keys to move the bar left and right
+           document.addEventListener("keydown", keyDownHandler, false);
+           document.addEventListener("keyup", keyUpHandler, false);
+            
+            function keyDownHandler(e) {
+                if(e.keyCode == 39) {
+                    goRight = true;
+                }
+                else if(e.keyCode == 37) {
+                    goLeft = true;
+                }
+            }
+
+            function keyUpHandler(e) {
+                if(e.keyCode == 39) {
+                    goRight = false;
+                }
+                else if(e.keyCode == 37) {
+                    goLeft = false;
+                }
+            }
+            
+            
+            function drawBall() {
+                //ctx.clearRect(0,0, c.width, c.height);
+                ctx.beginPath();
+                ctx.arc(x, y, radius, 0, Math.PI*2);
+                ctx.fillStyle = "blue";
+                ctx.fill();
+                ctx.closePath();
+                //x += dx;
+                //y += dy;
+            }
+            
+            function drawPaddle() {
+                    
+                    ctx.beginPath();
+                    ctx.rect(rectPos, c.height-rectHeight, rectWidth,rectHeight);
+                    ctx.fillStyle = "grey";
+                    ctx.fill();
+                    ctx.closePath();
+            }
+            
+            function drawScore() {
+                ctx.font = "16px Arial";
+                ctx.fillStyle = "#0095DD";
+                ctx.fillText("Score: "+score, 8, 20);
+            }
+            
+            function testColision(x,y){
+                //test for collision and update score
+                 if(x + dx > c.width-radius || x + dx < radius) {
+                    dx = -dx;
+                }
+                if(y + dy < radius) {
+                    dy = -dy;
+                }
+                else if(y + dy > c.height - radius) {
+                    if(x > rectPos && x < rectPos + rectWidth) {
+                        dy = -dy;
+                        score += 5;
+                    }
+                    else {
+                        alert("GAME OVER");
+                        document.location.reload();
+                    }
+                }
+            }
+            
+            function moveBarLeftRight(){
+                 
+                if(goRight && rectPos < c.width-rectWidth) {
+                    rectPos += 7;
+                }
+                else if(goLeft && rectPos > 0) {
+                    rectPos -= 7;
+                }
+            }
+            function draw() {
+                ctx.clearRect(0, 0, c.width, c.height);
+                drawBall();
+                drawPaddle();
+                testColision(x,y);
+                moveBarLeftRight();
+                drawScore();
+                x += dx;
+                y += dy;
+                
+            }
+            //window.requestAnimationFrame(draw)
+           setInterval(draw, 10);
+          </script>
+    </body>
+</html>
